@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WINGO AI PREDICTOR</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1e38 100%);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --primary-glow: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            --btn-gradient: linear-gradient(90deg, #2563eb, #7c3aed);
+            --btn-hover: linear-gradient(90deg, #1d4ed8, #6d28d9);
+            --big-color: #60a5fa;
+            --small-color: #f472b6;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg-gradient);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #f8fafc;
+        }
+
+        .container {
+            width: 360px;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 25px;
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            box-sizing: border-box;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            background: linear-gradient(to right, #38bdf8, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        #timer {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #2dd4bf;
+            background: rgba(45, 212, 191, 0.1);
+            padding: 8px 0;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(45, 212, 191, 0.2);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .label {
+            margin-bottom: 8px;
+            color: #94a3b8;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .mainInput {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            background: rgba(15, 23, 42, 0.6);
+            color: #fff;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 4px;
+            text-align: center;
+            box-sizing: border-box;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .mainInput:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .mainInput::placeholder {
+            letter-spacing: 1px;
+            font-size: 15px;
+            color: #475569;
+            font-weight: normal;
+        }
+
+        .mainBtn {
+            width: 100%;
+            padding: 16px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 14px;
+            background: var(--btn-gradient);
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+        }
+
+        .mainBtn:hover {
+            background: var(--btn-hover);
+            transform: translateY(-1px);
+        }
+
+        .mainBtn:active {
+            transform: translateY(1px);
+        }
+
+        .loading {
+            margin-top: 20px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #3b82f6, #ec4899);
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .resultBox {
+            margin-top: 20px;
+            background: rgba(15, 23, 42, 0.4);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .result-title {
+            font-size: 12px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .result {
+            font-size: 48px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            margin: 10px 0;
+        }
+
+        .big {
+            color: var(--big-color);
+            text-shadow: 0 0 25px rgba(96, 165, 250, 0.5);
+        }
+
+        .small {
+            color: var(--small-color);
+            text-shadow: 0 0 25px rgba(244, 114, 182, 0.5);
+        }
+
+        #status {
+            margin-top: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #94a3b8;
+        }
+
+        /* STATS SECTION */
+        .stats-panel {
+            margin-top: 25px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 16px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stats-grid {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            background: rgba(0,0,0,0.2);
+            padding: 12px;
+            border-radius: 12px;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-item:not(:last-child) {
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        #win { color: #10b981; }
+        #lose { color: #ef4444; }
+        #rate { color: #f59e0b; }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .stats-panel button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .winBtn {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981 !important;
+            border: 1px solid rgba(16, 185, 129, 0.4) !important;
+        }
+        .winBtn:hover { background: #10b981; color: white !important; }
+
+        .loseBtn {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444 !important;
+            border: 1px solid rgba(239, 68, 68, 0.4) !important;
+        }
+        .loseBtn:hover { background: #ef4444; color: white !important; }
+
+        .resetBtn {
+            background: rgba(100, 116, 139, 0.2);
+            color: #94a3b8 !important;
+            border: 1px solid rgba(100, 116, 139, 0.4) !important;
+        }
+        .resetBtn:hover { background: #64748b; color: white !important; }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 11px;
+            color: #475569;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="title">🧠 WINGO AI</div>
+        <div class="subtitle">Smart Prediction System</div>
+
+        <!-- Timer Default ကို 30s ဟု ပြောင်းလဲထားပါသည် -->
+        <div id="timer">30s</div>
+
+        <div class="label">ENTER LAST 5 NUMBERS (e.g., 21107)</div>
+        <input type="text" class="mainInput" id="pattern" placeholder="21107" maxlength="5" autocomplete="off">
+
+        <button class="mainBtn" onclick="analyze()">⚡ ANALYZE PREDICTION</button>
+
+        <div class="loading">
+            <div class="fill" id="fill"></div>
+        </div>
+
+        <div class="resultBox">
+            <div class="result-title">AI Prediction</div>
+            <div class="result" id="result">--</div>
+            <div id="status">Waiting for input...</div>
+        </div>
+
+        <!-- STATS PANEL -->
+        <div class="stats-panel">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">Win</div>
+                    <div class="stat-value" id="win">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Lose</div>
+                    <div class="stat-value" id="lose">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Win Rate</div>
+                    <div class="stat-value" id="rate">0%</div>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="winBtn" onclick="addWin()">WIN</button>
+                <button class="loseBtn" onclick="addLose()">LOSE</button>
+                <button class="resetBtn" onclick="resetStats()">RESET</button>
+            </div>
+        </div>
+
+        <div class="footer">QUANTUM AI ANALYSIS ENGINE</div>
+    </div>
+
+    <script>
+        /* 30 SEC TIMER LOGIC */
+        let time = 30; // 30 စက္ကန့်မှ စတင်ရန် ပြောင်းလဲထားပါသည်
+        let canPredict = true;
+
+        setInterval(function () {
+            time--;
+            document.getElementById("timer").innerHTML = time + "s";
+
+            if (time <= 0) {
+                time = 30; // သုညရောက်လျှင် 30s သို့ ပြန်လည်စတင်ရန် ပြောင်းလဲထားပါသည်
+                canPredict = true;
+                document.getElementById("status").innerHTML = "✅ NEW ROUND AVAILABLE";
+                document.getElementById("status").style.color = "#10b981";
+            }
+        }, 1000);
+
+        /* ANALYZE */
+        function analyze() {
+            if (!canPredict) {
+                document.getElementById("status").innerHTML = "⚠ WAIT FOR NEXT ROUND";
+                document.getElementById("status").style.color = "#f59e0b";
+                return;
+            }
+
+            let input = document.getElementById("pattern").value.trim();
+
+            if (input == "") {
+                document.getElementById("status").innerHTML = "⚠ PLEASE ENTER NUMBERS";
+                document.getElementById("status").style.color = "#ef4444";
+                return;
+            }
+
+            if (input.length != 5 || isNaN(input)) {
+                document.getElementById("status").innerHTML = "⚠ ENTER EXACTLY 5 NUMBERS";
+                document.getElementById("status").style.color = "#ef4444";
+                return;
+            }
+
+            canPredict = false;
+            time = 30; // ခလုတ်နှိပ်ပြီး ခဏတာဆိုင်းငံ့ချိန်အပြီးတွင် 30s သို့ ပြန်သတ်မှတ်ပါသည်
+
+            document.getElementById("status").innerHTML = "🔍 AI ANALYZING PATTERN...";
+            document.getElementById("status").style.color = "#38bdf8";
+            
+            document.getElementById("fill").style.width = "0%";
+            setTimeout(function () {
+                document.getElementById("fill").style.width = "100%";
+            }, 50);
+
+            // Calculation Logic
+            let sum = 0;
+            for (let i = 0; i < input.length; i++) {
+                sum += parseInt(input[i]);
+            }
+
+            let lastDigit = sum % 10;
+            let result = "";
+            let resultClass = "";
+
+            if (lastDigit >= 5) {
+                result = "BIG";
+                resultClass = "result big";
+            } else {
+                result = "SMALL";
+                resultClass = "result small";
+            }
+
+            setTimeout(function () {
+                let resultElement = document.getElementById("result");
+                resultElement.innerHTML = result;
+                resultElement.className = resultClass;
+
+                document.getElementById("status").innerHTML = "✅ AI ANALYSIS COMPLETED";
+                document.getElementById("status").style.color = "#10b981";
+            }, 1500);
+        }
+
+        /* STATS */
+        let win = 0;
+        let lose = 0;
+
+        function addWin() {
+            win++;
+            updateStats();
+        }
+
+        function addLose() {
+            lose++;
+            updateStats();
+        }
+
+        function resetStats() {
+            win = 0;
+            lose = 0;
+            updateStats();
+            document.getElementById("status").innerHTML = "✅ STATS RESET SUCCESSFULLY";
+            document.getElementById("status").style.color = "#10b981";
+        }
+
+        function updateStats() {
+            document.getElementById("win").innerHTML = win;
+            document.getElementById("lose").innerHTML = lose;
+
+            let total = win + lose;
+            let rate = 0;
+
+            if (total > 0) {
+                rate = Math.floor((win / total) * 100);
+            }
+
+            document.getElementById("rate").innerHTML = rate + "%";
+        }
+    </script>
+</body>
+
+</html>
